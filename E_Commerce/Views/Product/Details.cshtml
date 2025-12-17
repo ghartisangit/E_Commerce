@@ -1,0 +1,371 @@
+﻿@model E_Commerce.Models.Product
+
+@{
+    ViewData["Title"] = Model.Name;
+    var reviews = ViewBag.Reviews as IEnumerable<E_Commerce.Models.Review>;
+    var avgRating = (double)ViewBag.AverageRating;
+    var isLoggedIn = (bool)ViewBag.IsLoggedIn;
+}
+
+<style>
+    .product-details {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        margin-bottom: 3rem;
+    }
+
+    .product-image-large {
+        width: 100%;
+        height: 500px;
+        border-radius: 12px;
+        background: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 8rem;
+    }
+
+    .product-details-info h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: var(--dark);
+    }
+
+    .product-price-large {
+        font-size: 2.5rem;
+        color: var(--primary);
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .product-description {
+        color: var(--gray);
+        line-height: 1.8;
+        margin-bottom: 2rem;
+    }
+
+    .product-meta {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        padding: 1rem;
+        background: var(--light);
+        border-radius: 8px;
+    }
+
+    .meta-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .meta-label {
+        font-size: 0.9rem;
+        color: var(--gray);
+    }
+
+    .meta-value {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    .add-to-cart-section {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .reviews-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+    }
+
+    .review-summary {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 2px solid var(--light);
+    }
+
+    .rating-large {
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--dark);
+    }
+
+    .review-form {
+        background: var(--light);
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+
+        .review-form h3 {
+            margin-bottom: 1rem;
+        }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+    .star-rating {
+        display: flex;
+        gap: 0.5rem;
+        font-size: 2rem;
+        cursor: pointer;
+    }
+
+    .star {
+        color: #ddd;
+        transition: color 0.2s;
+    }
+
+        .star.active {
+            color: #ffc107;
+        }
+
+    .review-item {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--light);
+    }
+
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+
+    .review-author {
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    .review-date {
+        color: var(--gray);
+        font-size: 0.9rem;
+    }
+
+    .review-rating {
+        color: #ffc107;
+        margin-bottom: 0.5rem;
+    }
+
+    .review-comment {
+        color: #555;
+        line-height: 1.6;
+    }
+
+    @@media (max-width: 768px) {
+        .product-details {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="product-details">
+        <div>
+            <div class="product-image-large">
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl" alt="@Model.Name" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;" />
+                }
+                else
+                {
+                    <span>📦</span>
+                }
+            </div>
+        </div>
+
+        <div class="product-details-info">
+            <h1>@Model.Name</h1>
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <span class="stars" style="color: #ffc107; font-size: 1.2rem;">
+                    @for (int i = 0; i < 5; i++)
+                    {
+                        @(i < Math.Round(avgRating) ? "⭐" : "☆")
+                    }
+                </span>
+                <span>@avgRating.ToString("F1") (@reviews.Count() reviews)</span>
+            </div>
+
+            <div class="product-price-large">$@Model.Price.ToString("F2")</div>
+
+            <p class="product-description">@Model.Description</p>
+
+            <div class="product-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Category</span>
+                    <span class="meta-value">@Model.Category</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Availability</span>
+                    <span class="meta-value" style="color: @(Model.StockQuantity > 0 ? "var(--success)" : "var(--danger)")">
+                        @(Model.StockQuantity > 0 ? $"In Stock ({Model.StockQuantity})" : "Out of Stock")
+                    </span>
+                </div>
+            </div>
+
+            @if (Model.StockQuantity > 0)
+            {
+                <form method="post" action="/Product/AddToCart" class="add-to-cart-section">
+                    <input type="hidden" name="productId" value="@Model.Id" />
+                    <input type="hidden" name="productName" value="@Model.Name" />
+                    <input type="hidden" name="price" value="@Model.Price" />
+                    <input type="hidden" name="imageUrl" value="@Model.ImageUrl" />
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">🛒 Add to Cart</button>
+                </form>
+            }
+            else
+            {
+                <button class="btn btn-danger" disabled style="flex: 1;">Out of Stock</button>
+            }
+        </div>
+    </div>
+
+    <div class="reviews-section">
+        <h2 style="margin-bottom: 2rem;">Customer Reviews</h2>
+
+        <div class="review-summary">
+            <div>
+                <div class="rating-large">@avgRating.ToString("F1")</div>
+                <div style="color: #ffc107; font-size: 1.5rem;">⭐⭐⭐⭐⭐</div>
+            </div>
+            <div>
+                <p style="font-size: 1.1rem; color: var(--gray);">Based on @reviews.Count() reviews</p>
+            </div>
+        </div>
+
+        @if (isLoggedIn)
+        {
+            <div class="review-form">
+                <h3>Write a Review</h3>
+                <form method="post" action="/Product/AddReview" id="reviewForm">
+                    <input type="hidden" name="ProductId" value="@Model.Id" />
+                    <input type="hidden" name="Rating" id="ratingValue" value="5" />
+
+                    <div class="form-group">
+                        <label>Rating</label>
+                        <div class="star-rating" id="starRating">
+                            <span class="star active" data-rating="1">⭐</span>
+                            <span class="star active" data-rating="2">⭐</span>
+                            <span class="star active" data-rating="3">⭐</span>
+                            <span class="star active" data-rating="4">⭐</span>
+                            <span class="star active" data-rating="5">⭐</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="comment">Your Review</label>
+                        <textarea name="Comment" id="comment" placeholder="Share your experience with this product..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                </form>
+            </div>
+        }
+        else
+        {
+            <div style="background: var(--light); padding: 2rem; border-radius: 12px; text-align: center; margin-bottom: 2rem;">
+                <p>Please <a href="/Auth/Login?returnUrl=/Product/Details/@Model.Id" style="color: var(--primary); font-weight: 600;">login</a> to write a review</p>
+            </div>
+        }
+
+        @if (reviews.Any())
+        {
+            <h3 style="margin: 2rem 0 1rem;">All Reviews</h3>
+            @foreach (var review in reviews)
+            {
+                <div class="review-item">
+                    <div class="review-header">
+                        <span class="review-author">@review.User.FirstName @review.User.LastName</span>
+                        <span class="review-date">@review.CreatedAt.ToString("MMM dd, yyyy")</span>
+                    </div>
+                    <div class="review-rating">
+                        @for (int i = 0; i < review.Rating; i++)
+                        {
+                            <span>⭐</span>
+                        }
+                    </div>
+                    <p class="review-comment">@review.Comment</p>
+                </div>
+            }
+        }
+        else
+        {
+            <p style="text-align: center; color: var(--gray); padding: 2rem;">No reviews yet. Be the first to review!</p>
+        }
+    </div>
+</div>
+
+<script>
+    // Star rating functionality
+    const stars = document.querySelectorAll('.star');
+    const ratingValue = document.getElementById('ratingValue');
+
+    stars.forEach(star => {
+        star.addEventListener('click', () => {
+            const rating = star.getAttribute('data-rating');
+            ratingValue.value = rating;
+
+            stars.forEach(s => {
+                if (s.getAttribute('data-rating') <= rating) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+        });
+
+        star.addEventListener('mouseenter', () => {
+            const rating = star.getAttribute('data-rating');
+            stars.forEach(s => {
+                if (s.getAttribute('data-rating') <= rating) {
+                    s.style.color = '#ffc107';
+                } else {
+                    s.style.color = '#ddd';
+                }
+            });
+        });
+    });
+
+    document.getElementById('starRating').addEventListener('mouseleave', () => {
+        const currentRating = ratingValue.value;
+        stars.forEach(s => {
+            if (s.getAttribute('data-rating') <= currentRating) {
+                s.style.color = '#ffc107';
+            } else {
+                s.style.color = '#ddd';
+            }
+        });
+    });
+</script>

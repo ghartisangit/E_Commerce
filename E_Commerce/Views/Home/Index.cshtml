@@ -1,8 +1,155 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<E_Commerce.Models.Product>
+
+@{
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    .hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 4rem 2rem;
+        text-align: center;
+        border-radius: 15px;
+        margin-bottom: 3rem;
+    }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        cursor: pointer;
+    }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+    .product-image {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        background: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+    }
+
+    .product-info {
+        padding: 1.5rem;
+    }
+
+    .product-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+    }
+
+    .product-price {
+        font-size: 1.5rem;
+        color: var(--primary);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .product-rating {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .stars {
+        color: #ffc107;
+    }
+
+    .product-stock {
+        font-size: 0.9rem;
+        color: var(--success);
+        font-weight: 500;
+    }
+
+        .product-stock.out {
+            color: var(--danger);
+        }
+
+    .no-products {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--gray);
+    }
+
+        .no-products h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+</style>
+
+<div class="container">
+    <div class="hero">
+        <h1>Welcome to ShopEase! 🎉</h1>
+        <p>Discover amazing products at unbeatable prices</p>
+    </div>
+
+    @if (Model.Any())
+    {
+        <h2 style="margin-bottom: 1rem; font-size: 2rem;">Featured Products</h2>
+        <div class="products-grid">
+            @foreach (var product in Model)
+            {
+                <div class="product-card" onclick="location.href='/Product/Details/@product.Id'">
+                    <div class="product-image">
+                        @if (!string.IsNullOrEmpty(product.ImageUrl))
+                        {
+                            <img src="@product.ImageUrl" alt="@product.Name" style="width: 100%; height: 100%; object-fit: cover;" />
+                        }
+                        else
+                        {
+                            <span>📦</span>
+                        }
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">@product.Name</h3>
+                        <div class="product-price">$@product.Price.ToString("F2")</div>
+                        <div class="product-rating">
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                            <span>(@product.Reviews?.Count() ?? 0)</span>
+                        </div>
+                        <div class="product-stock @(product.StockQuantity > 0 ? "" : "out")">
+                            @(product.StockQuantity > 0 ? $"In Stock ({product.StockQuantity})" : "Out of Stock")
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="no-products">
+            <h2>No products found</h2>
+            <p>Check back later for amazing deals!</p>
+        </div>
+    }
 </div>

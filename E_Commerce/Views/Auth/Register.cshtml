@@ -1,0 +1,139 @@
+﻿@model E_Commerce.DTOs.RegisterDto
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+@* <h2>Register</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div style="color: green;">
+        @TempData["Success"]
+    </div>
+}
+
+<form asp-action="Register" method="post">
+
+    <div>
+        <label>First Name</label><br />
+        <input asp-for="FirstName" />
+        <span asp-validation-for="FirstName" style="color:red"></span>
+    </div>
+
+    <div>
+        <label>Last Name</label><br />
+        <input asp-for="LastName" />
+        <span asp-validation-for="LastName" style="color:red"></span>
+    </div>
+
+    <div>
+        <label>Email</label><br />
+        <input asp-for="Email" type="email" />
+        <span asp-validation-for="Email" style="color:red"></span>
+    </div>
+
+    <div>
+        <label>Password</label><br />
+        <input asp-for="Password" type="password" />
+        <span asp-validation-for="Password" style="color:red"></span>
+    </div>
+
+    <div>
+        <label>Confirm Password</label><br />
+        <input asp-for="ConfirmPassword" type="password" />
+        <span asp-validation-for="ConfirmPassword" style="color:red"></span>
+    </div>
+
+    <br />
+
+    <button type="submit">Register</button>
+</form>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div style="color:red;">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <p>@error.ErrorMessage</p>
+        }
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+} *@
+
+<div class="container">
+    <div class="auth-container" style="max-width: 600px;">
+        <div class="auth-header">
+            <div class="icon">👤</div>
+            <h1>Create Account</h1>
+            <p>Join ShopEase and start shopping today!</p>
+        </div>
+
+        <form method="post" asp-action="Register">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label asp-for="FirstName">First Name</label>
+                    <input asp-for="FirstName" class="form-control" placeholder="John" autofocus />
+                    <span asp-validation-for="FirstName" class="validation-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="LastName">Last Name</label>
+                    <input asp-for="LastName" class="form-control" placeholder="Doe" />
+                    <span asp-validation-for="LastName" class="validation-message"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Email">Email Address</label>
+                <input asp-for="Email" type="email" class="form-control" placeholder="john.doe@example.com" />
+                <span asp-validation-for="Email" class="validation-message"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password">Password</label>
+                <input asp-for="Password" type="password" class="form-control" placeholder="Create a strong password" />
+                <span asp-validation-for="Password" class="validation-message"></span>
+                <small style="color: var(--gray); display: block; margin-top: 0.5rem;">
+                    Password must be at least 6 characters long
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ConfirmPassword">Confirm Password</label>
+                <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Re-enter your password" />
+                <span asp-validation-for="ConfirmPassword" class="validation-message"></span>
+            </div>
+
+            @if (!ViewData.ModelState.IsValid && ViewData.ModelState[""]?.Errors.Count > 0)
+            {
+                <div class="alert alert-error" style="margin: 1rem 0;">
+                    @ViewData.ModelState[""].Errors[0].ErrorMessage
+                </div>
+            }
+
+            <div style="background: var(--light); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                <label style="display: flex; align-items: start; gap: 0.5rem; font-weight: normal; cursor: pointer;">
+                    <input type="checkbox" required style="margin-top: 0.25rem;" />
+                    <span style="font-size: 0.9rem;">
+                        I agree to the <a href="#" style="color: var(--primary);">Terms of Service</a> and
+                        <a href="#" style="color: var(--primary);">Privacy Policy</a>
+                    </span>
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                Create Account
+            </button>
+        </form>
+
+        <div class="auth-divider">
+            <span>Already have an account?</span>
+        </div>
+
+        <a href="/Auth/Login" class="btn btn-outline" style="width: 100%;">Login Instead</a>
+    </div>
+</div>

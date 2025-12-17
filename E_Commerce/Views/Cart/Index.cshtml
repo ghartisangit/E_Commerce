@@ -1,0 +1,326 @@
+﻿@model List<E_Commerce.Models.CartItem>
+
+@{
+    ViewData["Title"] = "Shopping Cart";
+    var total = (decimal)ViewBag.Total;
+}
+
+<style>
+    .cart-container {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+    }
+
+    .cart-items {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+    }
+
+    .cart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--light);
+    }
+
+    .cart-item {
+        display: grid;
+        grid-template-columns: 120px 1fr auto;
+        gap: 1.5rem;
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--light);
+        align-items: center;
+        transition: background 0.3s;
+    }
+
+        .cart-item:hover {
+            background: var(--light);
+        }
+
+    .cart-item-image {
+        width: 120px;
+        height: 120px;
+        border-radius: 8px;
+        background: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        overflow: hidden;
+    }
+
+        .cart-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .cart-item-details h3 {
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+        font-size: 1.1rem;
+    }
+
+    .cart-item-price {
+        font-size: 1.3rem;
+        color: var(--primary);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .quantity-control {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .quantity-btn {
+        width: 35px;
+        height: 35px;
+        border: 1px solid #ddd;
+        background: white;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1.2rem;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .quantity-btn:hover:not(:disabled) {
+            background: var(--light);
+            border-color: var(--primary);
+        }
+
+        .quantity-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+    .quantity-input {
+        width: 60px;
+        text-align: center;
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+        font-weight: 600;
+        background: white;
+    }
+
+    .cart-item-actions {
+        text-align: right;
+    }
+
+    .item-total {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--dark);
+    }
+
+    .remove-btn {
+        background: none;
+        border: none;
+        color: var(--danger);
+        cursor: pointer;
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+        transition: all 0.2s;
+        border-radius: 5px;
+    }
+
+        .remove-btn:hover {
+            background: rgba(239, 71, 111, 0.1);
+        }
+
+    .cart-summary {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--light);
+    }
+
+        .summary-row.total {
+            border-bottom: 2px solid var(--dark);
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+    .empty-cart {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 15px;
+    }
+
+    .empty-cart-icon {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+        animation: bounce 2s infinite;
+    }
+
+    @@keyframes bounce {
+        0%, 100%
+
+    {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        .cart-container
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    .cart-item {
+        grid-template-columns: 80px 1fr;
+    }
+
+    .cart-item-actions {
+        grid-column: 1 / -1;
+        text-align: left;
+        margin-top: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    }
+</style>
+
+<div class="container">
+    @if (Model != null && Model.Any())
+    {
+        <div class="cart-container">
+            <div class="cart-items">
+                <div class="cart-header">
+                    <h1>Shopping Cart</h1>
+                    <span style="color: var(--gray);">@Model.Count item(s)</span>
+                </div>
+
+                @foreach (var item in Model)
+                {
+                    <div class="cart-item">
+                        <div class="cart-item-image">
+                            @if (!string.IsNullOrEmpty(item.ImageUrl))
+                            {
+                                <img src="@item.ImageUrl" alt="@item.ProductName" />
+                            }
+                            else
+                            {
+                                <span>📦</span>
+                            }
+                        </div>
+
+                        <div class="cart-item-details">
+                            <h3>@item.ProductName</h3>
+                            <div class="cart-item-price">$@item.Price.ToString("F2")</div>
+
+                            <div class="quantity-control">
+                                <form method="post" action="/Cart/UpdateQuantity" style="display: inline;">
+                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                    <input type="hidden" name="quantity" value="@(item.Quantity - 1)" />
+                                    <button type="submit" class="quantity-btn" @(item.Quantity <= 1 ? "disabled" : "")>−</button>
+                                </form>
+
+                                <input type="text" class="quantity-input" value="@item.Quantity" readonly />
+
+                                <form method="post" action="/Cart/UpdateQuantity" style="display: inline;">
+                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                    <input type="hidden" name="quantity" value="@(item.Quantity + 1)" />
+                                    <button type="submit" class="quantity-btn">+</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="cart-item-actions">
+                            <div class="item-total">
+                                $@((item.Price * item.Quantity).ToString("F2"))
+                            </div>
+                            <form method="post" action="/Cart/RemoveItem">
+                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                <button type="submit" class="remove-btn" onclick="return confirm('Remove this item from cart?')">
+                                    🗑️ Remove
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="cart-summary">
+                <h2 style="margin-bottom: 1.5rem;">Order Summary</h2>
+
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span>$@total.ToString("F2")</span>
+                </div>
+
+                <div class="summary-row">
+                    <span>Shipping:</span>
+                    <span style="color: var(--success); font-weight: 600;">FREE</span>
+                </div>
+
+                <div class="summary-row">
+                    <span>Tax:</span>
+                    <span>$0.00</span>
+                </div>
+
+                <div class="summary-row total">
+                    <span>Total:</span>
+                    <span>$@total.ToString("F2")</span>
+                </div>
+
+                <a href="/Cart/Checkout" class="btn btn-primary" style="width: 100%; margin-top: 1.5rem;">
+                    Proceed to Checkout →
+                </a>
+
+                <a href="/" class="btn btn-outline" style="width: 100%; margin-top: 1rem;">
+                    ← Continue Shopping
+                </a>
+
+                <div style="margin-top: 1.5rem; padding: 1rem; background: var(--light); border-radius: 8px; text-align: center;">
+                    <p style="font-size: 0.9rem; color: var(--gray); margin: 0;">
+                        🔒 Secure Checkout<br />
+                        <small>Your information is safe with us</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="empty-cart">
+            <div class="empty-cart-icon">🛒</div>
+            <h2 style="margin-bottom: 1rem;">Your cart is empty</h2>
+            <p style="color: var(--gray); margin: 1rem 0 2rem;">Looks like you haven't added any products yet!</p>
+            <a href="/" class="btn btn-primary">Start Shopping</a>
+        </div>
+    }
+</div>
+

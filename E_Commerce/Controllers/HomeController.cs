@@ -1,21 +1,28 @@
-using System.Diagnostics;
+using E_Commerce.Interfaces;
 using E_Commerce.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace E_Commerce.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        //private readonly ILogger<HomeController> _logger;
+        private readonly IProductService _productService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IProductService productService)
         {
-            _logger = logger;
+            _productService = productService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(string search)
         {
-            return View();
+            var products = string.IsNullOrEmpty(search)
+                ? await _productService.GetAllProductsAsync()
+                : await _productService.SearchProductsAsync(search);
+
+            ViewBag.SearchTerm = search;
+            return View(products);
         }
 
         public IActionResult Privacy()
