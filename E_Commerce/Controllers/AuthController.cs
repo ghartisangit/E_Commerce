@@ -63,33 +63,7 @@ namespace E_Commerce.Controllers
             }
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> Register(RegisterDto registerDto)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return View(registerDto);
-
-        //    try
-        //    {
-        //        var token = await _authService.RegisterAsync(registerDto);
-        //        Response.Cookies.Append("AuthToken", token, new CookieOptions
-        //        {
-        //            HttpOnly = true,
-        //            Secure = true,
-        //            SameSite = SameSiteMode.Strict,
-        //            Expires = DateTimeOffset.UtcNow.AddHours(1)
-        //        });
-
-        //        TempData["Success"] = "Registration successful!";
-        //        return RedirectToAction("Index", "Home");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ModelState.AddModelError("", ex.Message);
-        //        return View(registerDto);
-        //    }
-        //}
-
+       
         [HttpGet]
         public IActionResult Login(string returnUrl = null)
         {
@@ -143,36 +117,7 @@ namespace E_Commerce.Controllers
         }
 
 
-        //[HttpPost]
-        //public async Task<IActionResult> Login(LoginDto loginDto, string returnUrl = null)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return View(loginDto);
-
-        //    try
-        //    {
-        //        var token = await _authService.LoginAsync(loginDto);
-        //        Response.Cookies.Append("AuthToken", token, new CookieOptions
-        //        {
-        //            HttpOnly = true,
-        //            Secure = true,
-        //            SameSite = SameSiteMode.Strict,
-        //            Expires = DateTimeOffset.UtcNow.AddHours(1)
-        //        });
-
-        //        TempData["Success"] = "Login successful!";
-
-        //        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-        //            return Redirect(returnUrl);
-
-        //        return RedirectToAction("Index", "Home");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ModelState.AddModelError("", ex.Message);
-        //        return View(loginDto);
-        //    }
-        //}
+       
 
         [HttpPost]
         public IActionResult Logout()

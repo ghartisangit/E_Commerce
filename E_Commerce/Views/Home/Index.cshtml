@@ -133,10 +133,10 @@
                     <div class="product-info">
                         <h3 class="product-title">@product.Name</h3>
                         <div class="product-price">$@product.Price.ToString("F2")</div>
-                        <div class="product-rating">
+                        @* <div class="product-rating">
                             <span class="stars">⭐⭐⭐⭐⭐</span>
                             <span>(@product.Reviews?.Count() ?? 0)</span>
-                        </div>
+                        </div> *@
                         <div class="product-stock @(product.StockQuantity > 0 ? "" : "out")">
                             @(product.StockQuantity > 0 ? $"In Stock ({product.StockQuantity})" : "Out of Stock")
                         </div>

@@ -197,9 +197,9 @@
                     <div class="order-header">
                         <div class="order-info">
                             <h3>Order #@order.Id.ToString("D6")</h3>
-                            <p class="order-date">
+                            @* <p class="order-date">
                                 📅 Placed on @order.OrderDate.ToString("MMMM dd, yyyy 'at' hh:mm tt")
-                            </p>
+                            </p> *@
                         </div>
                         <div>
                             <span class="status-badge @($"status-{order.Status.ToLower()}")">

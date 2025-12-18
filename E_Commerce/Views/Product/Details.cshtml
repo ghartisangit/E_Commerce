@@ -209,13 +209,13 @@
         <div class="product-details-info">
             <h1>@Model.Name</h1>
             <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                <span class="stars" style="color: #ffc107; font-size: 1.2rem;">
+                @* <span class="stars" style="color: #ffc107; font-size: 1.2rem;">
                     @for (int i = 0; i < 5; i++)
                     {
                         @(i < Math.Round(avgRating) ? "⭐" : "☆")
                     }
                 </span>
-                <span>@avgRating.ToString("F1") (@reviews.Count() reviews)</span>
+                <span>@avgRating.ToString("F1") (@reviews.Count() reviews)</span> *@
             </div>
 
             <div class="product-price-large">$@Model.Price.ToString("F2")</div>
@@ -252,7 +252,7 @@
         </div>
     </div>
 
-    <div class="reviews-section">
+    @* <div class="reviews-section">
         <h2 style="margin-bottom: 2rem;">Customer Reviews</h2>
 
         <div class="review-summary">
@@ -263,7 +263,7 @@
             <div>
                 <p style="font-size: 1.1rem; color: var(--gray);">Based on @reviews.Count() reviews</p>
             </div>
-        </div>
+        </div> *@
 
         @if (isLoggedIn)
         {
@@ -273,7 +273,7 @@
                     <input type="hidden" name="ProductId" value="@Model.Id" />
                     <input type="hidden" name="Rating" id="ratingValue" value="5" />
 
-                    <div class="form-group">
+                    @* <div class="form-group">
                         <label>Rating</label>
                         <div class="star-rating" id="starRating">
                             <span class="star active" data-rating="1">⭐</span>
@@ -282,7 +282,7 @@
                             <span class="star active" data-rating="4">⭐</span>
                             <span class="star active" data-rating="5">⭐</span>
                         </div>
-                    </div>
+                    </div> *@
 
                     <div class="form-group">
                         <label for="comment">Your Review</label>
@@ -310,12 +310,12 @@
                         <span class="review-author">@review.User.FirstName @review.User.LastName</span>
                         <span class="review-date">@review.CreatedAt.ToString("MMM dd, yyyy")</span>
                     </div>
-                    <div class="review-rating">
+                    @* <div class="review-rating">
                         @for (int i = 0; i < review.Rating; i++)
                         {
                             <span>⭐</span>
                         }
-                    </div>
+                    </div> *@
                     <p class="review-comment">@review.Comment</p>
                 </div>
             }

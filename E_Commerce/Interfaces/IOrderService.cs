@@ -5,8 +5,10 @@ namespace E_Commerce.Interfaces
 {
     public interface IOrderService
     {
-        Task<Order> CreateOrderAsync(int userId, CheckOutDto checkoutDto, List<CartItem> cartItems);
-        Task<IEnumerable<Order>> GetUserOrdersAsync(int userId);
+        Task<Order> CreatePendingOrderAsync(int userId, CheckOutDto checkoutDto, List<CartItem> cart);
+        Task UpdateOrderKhaltiPidxAsync(int orderId, string pidx);
+        Task CompleteOrderAsync(int orderId, string transactionId, string pidx);
         Task<Order> GetOrderByIdAsync(int orderId);
+        Task<List<Order>> GetUserOrdersAsync(int userId);
     }
 }

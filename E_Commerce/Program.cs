@@ -60,7 +60,9 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
-
+// Add in Program.cs or Startup.cs
+builder.Services.AddHttpClient<IKhaltiService, KhaltiService>();
+builder.Services.AddScoped<IKhaltiService, KhaltiService>();
 // FluentValidation
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
