@@ -1,1 +1,394 @@
-﻿
+﻿@model E_Commerce.Models.Order
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .order-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+    }
+
+    .info-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+
+        .info-card h5 {
+            margin: 0 0 1.5rem 0;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f8f9fa;
+            font-size: 1.25rem;
+            color: #212529;
+        }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #f8f9fa;
+    }
+
+        .info-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+    .info-label {
+        font-weight: 600;
+        color: #6c757d;
+    }
+
+    .info-value {
+        color: #212529;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead {
+        background: #f8f9fa;
+    }
+
+    th {
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    td {
+        padding: 1rem;
+        border-bottom: 1px solid #f8f9fa;
+    }
+
+    .product-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .product-thumb {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #f0f0f0;
+    }
+
+        .product-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #495057;
+        }
+
+    .form-control, .form-select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        font-size: 1rem;
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-processing {
+        background: #cfe2ff;
+        color: #084298;
+    }
+
+    .status-shipped {
+        background: #d1e7dd;
+        color: #0a3622;
+    }
+
+    .status-delivered {
+        background: #d1e7dd;
+        color: #0a3622;
+    }
+
+    .status-completed {
+        background: #d1e7dd;
+        color: #0a3622;
+    }
+
+    .status-cancelled {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .quick-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+        .quick-actions a, .quick-actions button {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            background: white;
+            color: #495057;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .quick-actions a:hover, .quick-actions button:hover {
+                background: #f8f9fa;
+            }
+
+    @@media (max-width: 768px) {
+        .order-grid
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    }
+</style>
+
+<div class="container py-4">
+    <div class="page-header">
+        <h2>Order #@Model.Id Details</h2>
+        <a href="@Url.Action("Orders", "Admin")" class="btn btn-secondary">← Back to Orders</a>
+    </div>
+
+    <div class="order-grid">
+        <!-- Left Column -->
+        <div>
+            <!-- Order Information -->
+            <div class="info-card">
+                <h5>Order Information</h5>
+                <div class="info-row">
+                    <span class="info-label">Order ID:</span>
+                    <span class="info-value"><strong>#@Model.Id</strong></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Order Date:</span>
+                    <span class="info-value">@Model.CreatedAt.ToString("MMM dd, yyyy HH:mm")</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Payment Method:</span>
+                    <span class="info-value">@(Model.PaymentMethod ?? "Not Set")</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Transaction ID:</span>
+                    <span class="info-value">
+                        <small style="color: #6c757d;">@(Model.PaymentTransactionId ?? "Pending")</small>
+                    </span>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.KhaltiPidx) && Model.KhaltiPidx != "N/A")
+                {
+                    <div class="info-row">
+                        <span class="info-label">Khalti PIDX:</span>
+                        <span class="info-value">
+                            <small style="color: #6c757d;">@Model.KhaltiPidx</small>
+                        </span>
+                    </div>
+                }
+               
+            </div>
+
+            <!-- Customer Information -->
+            <div class="info-card">
+                <h5>Customer Information</h5>
+                <div class="info-row">
+                    <span class="info-label">Name:</span>
+                    <span class="info-value"><strong>@Model.User.FirstName @Model.User.LastName</strong></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email:</span>
+                    <span class="info-value">@Model.User.Email</span>
+                </div>
+            </div>
+
+            <!-- Shipping Information -->
+            <div class="info-card">
+                <h5>Shipping Information</h5>
+                <p style="margin: 0;"><strong>@Model.ShippingName</strong></p>
+                <p style="margin: 0.5rem 0;">@Model.ShippingAddress</p>
+                <p style="margin: 0.5rem 0;">@Model.ShippingCity</p>
+                <p style="margin: 0.5rem 0;">📞 @Model.ShippingPhone</p>
+                <p style="margin: 0.5rem 0;">📧 @Model.ShippingEmail</p>
+            </div>
+
+            <!-- Order Items -->
+            <div class="info-card">
+                <h5>Order Items</h5>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                            <th style="text-align: right;">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderItems)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="product-info">
+                                        @if (!string.IsNullOrEmpty(item.Product.ImageUrl))
+                                        {
+                                            <div class="product-thumb">
+                                                <img src="@item.Product.ImageUrl" alt="@item.Product.Name">
+                                            </div>
+                                        }
+                                        <span>@item.Product.Name</span>
+                                    </div>
+                                </td>
+                                <td>$@item.Price.ToString("N2")</td>
+                                <td>@item.Quantity</td>
+                                <td style="text-align: right;"><strong>$@((item.Price * item.Quantity).ToString("N2"))</strong></td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr style="background: #f8f9fa; font-size: 1.1rem;">
+                            <td colspan="3" style="text-align: right; font-weight: 600;">Total:</td>
+                            <td style="text-align: right; font-weight: 700; color: #28a745;">
+                                $@Model.TotalAmount.ToString("N2")
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- Admin Notes -->
+            @if (!string.IsNullOrEmpty(Model.AdminNotes))
+            {
+                <div class="info-card" style="background: #fff3cd; border-left: 4px solid #ffc107;">
+                    <h5>Admin Notes</h5>
+                    <p style="margin: 0; color: #856404;">@Model.AdminNotes</p>
+                </div>
+            }
+        </div>
+
+        <!-- Right Column (Sidebar) -->
+        <div>
+            <!-- Status Management -->
+            <div class="info-card">
+                <h5>Order Status</h5>
+
+                <div style="margin-bottom: 2rem; text-align: center;">
+                    <p style="margin: 0 0 1rem 0; color: #6c757d;">Current Status:</p>
+                    <span class="status-badge status-@Model.Status.ToLower()">
+                        @Model.Status
+                    </span>
+                </div>
+
+                <form asp-action="UpdateOrderStatus" method="post">
+                    <input type="hidden" name="OrderId" value="@Model.Id" />
+
+                    <div class="form-group">
+                        <label>Update Status:</label>
+                        <select name="Status" class="form-select" required>
+                            <option value="">Select Status...</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Processing">Processing</option>
+                            <option value="Shipped">Shipped</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Admin Notes:</label>
+                        <textarea name="AdminNotes" class="form-control"
+                                  placeholder="Add notes about this status update..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        💾 Update Status
+                    </button>
+                </form>
+            </div>
+
+            <!-- Cancel Order -->
+            @if (Model.Status != "Cancelled" && Model.Status != "Completed")
+            {
+                <div class="info-card" style="border: 2px solid #dc3545;">
+                    <h5 style="color: #dc3545;">Cancel Order</h5>
+
+                    <form asp-action="CancelOrder" method="post"
+                          onsubmit="return confirm('Are you sure you want to cancel this order?');">
+                        <input type="hidden" name="orderId" value="@Model.Id" />
+
+                        <div class="form-group">
+                            <label>Cancellation Reason:</label>
+                            <textarea name="reason" class="form-control" rows="3" required
+                                  placeholder="Enter reason for cancellation..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger" style="width: 100%;">
+                            ❌ Cancel Order
+                        </button>
+                    </form>
+                </div>
+            }
+
+            <!-- Quick Actions -->
+            <div class="info-card">
+                <h5>Quick Actions</h5>
+                <div class="quick-actions">
+                    <a href="mailto:@Model.ShippingEmail">
+                        📧 Email Customer
+                    </a>
+                    <a href="tel:@Model.ShippingPhone">
+                        📞 Call Customer
+                    </a>
+                    <button onclick="window.print()">
+                        🖨️ Print Order
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

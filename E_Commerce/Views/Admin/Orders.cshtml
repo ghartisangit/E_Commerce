@@ -1,245 +1,267 @@
-﻿@model Order
+﻿@model List<E_Commerce.Models.Order>
+@using E_Commerce.DTOs
 @{
-    ViewData["Title"] = "Order Details";
+    ViewData["Title"] = "Manage Orders";
+    var filter = ViewBag.Filter as OrderFilterDto;
+    var totalPages = (int)ViewBag.TotalPages;
+    var totalCount = (int)ViewBag.TotalCount;
 }
 
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .filter-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #495057;
+        }
+
+    .form-control, .form-select {
+        padding: 0.75rem;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        font-size: 1rem;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+    }
+
+    thead {
+        background: #f8f9fa;
+    }
+
+    th {
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    td {
+        padding: 1rem;
+        border-bottom: 1px solid #f8f9fa;
+    }
+
+    tbody tr:hover {
+        background: #f8f9fa;
+    }
+
+    .status-dropdown {
+        padding: 0.5rem;
+        border-radius: 6px;
+        border: 1px solid #ced4da;
+        font-size: 0.9rem;
+    }
+
+    .badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+        list-style: none;
+        padding: 0;
+    }
+
+        .pagination a {
+            padding: 0.5rem 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #495057;
+        }
+
+            .pagination a:hover, .pagination a.active {
+                background: #667eea;
+                color: white;
+                border-color: #667eea;
+            }
+</style>
+
 <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Order #@Model.Id Details</h2>
-        <a asp-action="Orders" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Back to Orders
-        </a>
+    <div class="page-header">
+        <div>
+            <h2>Manage Orders</h2>
+            <p style="color: #6c757d; margin: 0.5rem 0 0 0;">Total: @totalCount orders</p>
+        </div>
+        <a href="@Url.Action("Dashboard", "Admin")" class="btn btn-secondary">← Back to Dashboard</a>
     </div>
 
-    <div class="row">
-        <!-- Order Information -->
-        <div class="col-md-8">
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Order Information</h5>
+    <!-- Filters -->
+    <div class="filter-card">
+        <form asp-action="Orders" method="get">
+            <div class="filter-grid">
+                <div class="form-group">
+                    <label>Status</label>
+                    <select name="Status" class="form-select">
+                        <option value="">All Statuses</option>
+                        <option value="Pending" selected="@(filter.Status == "Pending")">Pending</option>
+                        <option value="Processing" selected="@(filter.Status == "Processing")">Processing</option>
+                        <option value="Shipped" selected="@(filter.Status == "Shipped")">Shipped</option>
+                        <option value="Delivered" selected="@(filter.Status == "Delivered")">Delivered</option>
+                        <option value="Completed" selected="@(filter.Status == "Completed")">Completed</option>
+                        <option value="Cancelled" selected="@(filter.Status == "Cancelled")">Cancelled</option>
+                    </select>
                 </div>
-                <div class="card-body">
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <strong>Order ID:</strong> #@Model.Id
-                        </div>
-                        <div class="col-md-6">
-                            <strong>Order Date:</strong> @Model.CreatedAt.ToString("MMM dd, yyyy HH:mm")
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <strong>Payment Method:</strong> @Model.PaymentMethod
-                        </div>
-                        <div class="col-md-6">
-                            <strong>Transaction ID:</strong><br />
-                            <small class="text-muted">@Model.PaymentTransactionId</small>
-                        </div>
-                    </div>
-                    @if (!string.IsNullOrEmpty(Model.KhaltiPidx) && Model.KhaltiPidx != "N/A")
-                    {
-                        <div class="row mb-3">
-                            <div class="col-12">
-                                <strong>Khalti PIDX:</strong><br />
-                                <small class="text-muted">@Model.KhaltiPidx</small>
-                            </div>
-                        </div>
-                    }
-                 
+
+                <div class="form-group">
+                    <label>From Date</label>
+                    <input type="date" name="FromDate" class="form-control" value="@filter.FromDate?.ToString("yyyy-MM-dd")">
+                </div>
+
+                <div class="form-group">
+                    <label>To Date</label>
+                    <input type="date" name="ToDate" class="form-control" value="@filter.ToDate?.ToString("yyyy-MM-dd")">
+                </div>
+
+                <div class="form-group">
+                    <label>Search</label>
+                    <input type="text" name="SearchTerm" class="form-control" placeholder="Order ID, Name, Email..." value="@filter.SearchTerm">
                 </div>
             </div>
 
-            <!-- Customer Information -->
-            <div class="card mb-4">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">Customer Information</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row mb-2">
-                        <div class="col-md-6">
-                            <strong>Name:</strong> @Model.User.FirstName @Model.User.LastName
-                        </div>
-                        <div class="col-md-6">
-                            <strong>Email:</strong> @Model.User.Email
-                        </div>
-                    </div>
-                </div>
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                <a asp-action="Orders" class="btn btn-secondary">Reset</a>
             </div>
+        </form>
+    </div>
 
-            <!-- Shipping Information -->
-            <div class="card mb-4">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">Shipping Information</h5>
-                </div>
-                <div class="card-body">
-                    <p class="mb-1"><strong>@Model.ShippingName</strong></p>
-                    <p class="mb-1">@Model.ShippingAddress</p>
-                    <p class="mb-1">@Model.ShippingCity</p>
-                    <p class="mb-1"><i class="fas fa-phone"></i> @Model.ShippingPhone</p>
-                    <p class="mb-0"><i class="fas fa-envelope"></i> @Model.ShippingEmail</p>
-                </div>
-            </div>
-
-            <!-- Order Items -->
-            <div class="card mb-4">
-                <div class="card-header bg-dark text-white">
-                    <h5 class="mb-0">Order Items</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Price</th>
-                                    <th>Quantity</th>
-                                    <th class="text-end">Subtotal</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model.OrderItems)
-                                {
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                @if (!string.IsNullOrEmpty(item.Product.ImageUrl))
-                                                {
-                                                    <img src="@item.Product.ImageUrl" alt="@item.Product.Name"
-                                                         class="img-thumbnail me-2" style="width: 50px; height: 50px; object-fit: cover;">
-                                                }
-                                                <span>@item.Product.Name</span>
-                                            </div>
-                                        </td>
-                                        <td>${@item.Price.ToString("N2")}</td>
-                                        <td>@item.Quantity</td>
-                                        <td class="text-end"><strong>${@((item.Price * item.Quantity).ToString("N2"))}</strong></td>
-                                    </tr>
-                                }
-                            </tbody>
-                            <tfoot>
-                                <tr class="table-active">
-                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                                    <td class="text-end"><strong class="text-success">${@Model.TotalAmount.ToString("N2")}</strong></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Admin Notes -->
-            @if (!string.IsNullOrEmpty(Model.AdminNotes))
-            {
-                <div class="card mb-4">
-                    <div class="card-header bg-warning">
-                        <h5 class="mb-0">Admin Notes</h5>
-                    </div>
-                    <div class="card-body">
-                        <p class="mb-0">@Model.AdminNotes</p>
-                    </div>
-                </div>
-            }
-        </div>
-
-        <!-- Status Management Sidebar -->
-        <div class="col-md-4">
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Order Status</h5>
-                </div>
-                <div class="card-body">
-                    <form asp-action="UpdateOrderStatus" method="post">
-                        <input type="hidden" name="OrderId" value="@Model.Id" />
-
-                        <div class="mb-3">
-                            <label class="form-label"><strong>Current Status:</strong></label>
-                            <h4>
-                                <span class="badge bg-@GetStatusBadgeColor(Model.Status)">
-                                    @Model.Status
-                                </span>
-                            </h4>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label"><strong>Update Status:</strong></label>
-                            <select name="Status" class="form-select" required>
-                                <option value="">Select Status...</option>
-                                <option value="Pending">Pending</option>
-                                <option value="Processing">Processing</option>
-                                <option value="Cancelled">Cancelled</option>
-                                <option value="Completed">Completed</option>
+    <!-- Orders Table -->
+    <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <table>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model)
+                {
+                    <tr>
+                        <td><strong>#@order.Id</strong></td>
+                        <td>
+                            <strong>@order.ShippingName</strong>
+                            <div style="font-size: 0.85rem; color: #6c757d;">@order.ShippingEmail</div>
+                        </td>
+                        <td>@order.CreatedAt.ToString("MMM dd, yyyy HH:mm")</td>
+                        <td>@order.OrderItems.Count items</td>
+                        <td><strong>$@order.TotalAmount.ToString("N2")</strong></td>
+                        <td>
+                            <select class="status-dropdown" data-order-id="@order.Id" data-current-status="@order.Status">
+                                <option value="Pending" selected="@(order.Status == "Pending")">Pending</option>
+                                <option value="Processing" selected="@(order.Status == "Processing")">Processing</option>
+                                <option value="Shipped" selected="@(order.Status == "Shipped")">Shipped</option>
+                                <option value="Delivered" selected="@(order.Status == "Delivered")">Delivered</option>
+                                <option value="Completed" selected="@(order.Status == "Completed")">Completed</option>
+                                <option value="Cancelled" selected="@(order.Status == "Cancelled")">Cancelled</option>
                             </select>
-                        </div>
+                        </td>
+                        <td>
+                            <a href="@Url.Action("OrderDetails", "Admin", new { id = order.Id })" class="btn btn-sm btn-primary">
+                                View Details
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
 
-                        <div class="mb-3">
-                            <label class="form-label"><strong>Admin Notes:</strong></label>
-                            <textarea name="AdminNotes" class="form-control" rows="3"
-                                      placeholder="Add notes about this status update..."></textarea>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="fas fa-save"></i> Update Status
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Cancel Order -->
-            @if (Model.Status != "Cancelled" && Model.Status != "Completed")
-            {
-                <div class="card border-danger">
-                    <div class="card-header bg-danger text-white">
-                        <h5 class="mb-0">Cancel Order</h5>
-                    </div>
-                    <div class="card-body">
-                        <form asp-action="CancelOrder" method="post" onsubmit="return confirm('Are you sure you want to cancel this order?');">
-                            <input type="hidden" name="orderId" value="@Model.Id" />
-
-                            <div class="mb-3">
-                                <label class="form-label">Cancellation Reason:</label>
-                                <textarea name="reason" class="form-control" rows="2" required
-                                      placeholder="Enter reason for cancellation..."></textarea>
-                            </div>
-
-                            <button type="submit" class="btn btn-danger w-100">
-                                <i class="fas fa-times-circle"></i> Cancel Order
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            }
-
-            <!-- Quick Actions -->
-            <div class="card mt-4">
-                <div class="card-header">
-                    <h5 class="mb-0">Quick Actions</h5>
-                </div>
-                <div class="card-body">
-                    <a href="mailto:@Model.ShippingEmail" class="btn btn-outline-primary w-100 mb-2">
-                        <i class="fas fa-envelope"></i> Email Customer
-                    </a>
-                    <a href="tel:@Model.ShippingPhone" class="btn btn-outline-success w-100 mb-2">
-                        <i class="fas fa-phone"></i> Call Customer
-                    </a>
-                    <button onclick="window.print()" class="btn btn-outline-secondary w-100">
-                        <i class="fas fa-print"></i> Print Order
-                    </button>
-                </div>
-            </div>
-        </div>
+        <!-- Pagination -->
+        @if (totalPages > 1)
+        {
+            <ul class="pagination">
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <li>
+                        <a href="?PageNumber=@i&Status=@filter.Status&SearchTerm=@filter.SearchTerm&FromDate=@filter.FromDate?.ToString("yyyy-MM-dd")&ToDate=@filter.ToDate?.ToString("yyyy-MM-dd")"
+                           class="@(i == filter.PageNumber ? "active" : "")">
+                            @i
+                        </a>
+                    </li>
+                }
+            </ul>
+        }
     </div>
 </div>
 
-@functions {
-    string GetStatusBadgeColor(string status)
-    {
-        return status switch
-        {
-            "Pending" => "warning",
-            "Processing" => "info",
-            "Completed" => "success",
-            "Cancelled" => "danger",
-            _ => "secondary"
-        };
-    }
+@section Scripts {
+    <script>
+        // Quick status update
+        document.querySelectorAll('.status-dropdown').forEach(dropdown => {
+            dropdown.addEventListener('change', async function() {
+                const orderId = this.dataset.orderId;
+                const newStatus = this.value;
+                const currentStatus = this.dataset.currentStatus;
+
+                if (newStatus === currentStatus) return;
+
+                if (!confirm(`Change order #${orderId} status to "${newStatus}"?`)) {
+                    this.value = currentStatus;
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/Admin/QuickStatusUpdate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ orderId: parseInt(orderId), status: newStatus })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        this.dataset.currentStatus = newStatus;
+                        alert('Status updated successfully!');
+                    } else {
+                        alert('Failed to update status: ' + result.message);
+                        this.value = currentStatus;
+                    }
+                } catch (error) {
+                    alert('Error updating status');
+                    this.value = currentStatus;
+                }
+            });
+        });
+    </script>
 }
