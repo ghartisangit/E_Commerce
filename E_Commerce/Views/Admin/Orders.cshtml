@@ -1,0 +1,245 @@
+﻿@model Order
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Order #@Model.Id Details</h2>
+        <a asp-action="Orders" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Orders
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Order Information -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Order Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Order ID:</strong> #@Model.Id
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Order Date:</strong> @Model.CreatedAt.ToString("MMM dd, yyyy HH:mm")
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Payment Method:</strong> @Model.PaymentMethod
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Transaction ID:</strong><br />
+                            <small class="text-muted">@Model.PaymentTransactionId</small>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.KhaltiPidx) && Model.KhaltiPidx != "N/A")
+                    {
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <strong>Khalti PIDX:</strong><br />
+                                <small class="text-muted">@Model.KhaltiPidx</small>
+                            </div>
+                        </div>
+                    }
+                 
+                </div>
+            </div>
+
+            <!-- Customer Information -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Customer Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <strong>Name:</strong> @Model.User.FirstName @Model.User.LastName
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Email:</strong> @Model.User.Email
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping Information -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Shipping Information</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>@Model.ShippingName</strong></p>
+                    <p class="mb-1">@Model.ShippingAddress</p>
+                    <p class="mb-1">@Model.ShippingCity</p>
+                    <p class="mb-1"><i class="fas fa-phone"></i> @Model.ShippingPhone</p>
+                    <p class="mb-0"><i class="fas fa-envelope"></i> @Model.ShippingEmail</p>
+                </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Order Items</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.OrderItems)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                @if (!string.IsNullOrEmpty(item.Product.ImageUrl))
+                                                {
+                                                    <img src="@item.Product.ImageUrl" alt="@item.Product.Name"
+                                                         class="img-thumbnail me-2" style="width: 50px; height: 50px; object-fit: cover;">
+                                                }
+                                                <span>@item.Product.Name</span>
+                                            </div>
+                                        </td>
+                                        <td>${@item.Price.ToString("N2")}</td>
+                                        <td>@item.Quantity</td>
+                                        <td class="text-end"><strong>${@((item.Price * item.Quantity).ToString("N2"))}</strong></td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-active">
+                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                    <td class="text-end"><strong class="text-success">${@Model.TotalAmount.ToString("N2")}</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Notes -->
+            @if (!string.IsNullOrEmpty(Model.AdminNotes))
+            {
+                <div class="card mb-4">
+                    <div class="card-header bg-warning">
+                        <h5 class="mb-0">Admin Notes</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-0">@Model.AdminNotes</p>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Status Management Sidebar -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Order Status</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="UpdateOrderStatus" method="post">
+                        <input type="hidden" name="OrderId" value="@Model.Id" />
+
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Current Status:</strong></label>
+                            <h4>
+                                <span class="badge bg-@GetStatusBadgeColor(Model.Status)">
+                                    @Model.Status
+                                </span>
+                            </h4>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Update Status:</strong></label>
+                            <select name="Status" class="form-select" required>
+                                <option value="">Select Status...</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Processing">Processing</option>
+                                <option value="Cancelled">Cancelled</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Admin Notes:</strong></label>
+                            <textarea name="AdminNotes" class="form-control" rows="3"
+                                      placeholder="Add notes about this status update..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-save"></i> Update Status
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Cancel Order -->
+            @if (Model.Status != "Cancelled" && Model.Status != "Completed")
+            {
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0">Cancel Order</h5>
+                    </div>
+                    <div class="card-body">
+                        <form asp-action="CancelOrder" method="post" onsubmit="return confirm('Are you sure you want to cancel this order?');">
+                            <input type="hidden" name="orderId" value="@Model.Id" />
+
+                            <div class="mb-3">
+                                <label class="form-label">Cancellation Reason:</label>
+                                <textarea name="reason" class="form-control" rows="2" required
+                                      placeholder="Enter reason for cancellation..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-danger w-100">
+                                <i class="fas fa-times-circle"></i> Cancel Order
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+
+            <!-- Quick Actions -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <a href="mailto:@Model.ShippingEmail" class="btn btn-outline-primary w-100 mb-2">
+                        <i class="fas fa-envelope"></i> Email Customer
+                    </a>
+                    <a href="tel:@Model.ShippingPhone" class="btn btn-outline-success w-100 mb-2">
+                        <i class="fas fa-phone"></i> Call Customer
+                    </a>
+                    <button onclick="window.print()" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-print"></i> Print Order
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetStatusBadgeColor(string status)
+    {
+        return status switch
+        {
+            "Pending" => "warning",
+            "Processing" => "info",
+            "Completed" => "success",
+            "Cancelled" => "danger",
+            _ => "secondary"
+        };
+    }
+}

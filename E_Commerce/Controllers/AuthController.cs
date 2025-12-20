@@ -34,23 +34,23 @@ namespace E_Commerce.Controllers
             {
                 var token = await _authService.RegisterAsync(registerDto);
 
-                // Store JWT in cookie
+                
                 Response.Cookies.Append("AuthToken", token, new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = false, // set true in production HTTPS
+                    Secure = false, 
                     SameSite = SameSiteMode.Strict,
                     Expires = DateTimeOffset.UtcNow.AddHours(1)
                 });
 
-                // Parse JWT to get role
+                
                 var handler = new JwtSecurityTokenHandler();
                 var jwtToken = handler.ReadJwtToken(token);
                 var roleClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
 
                 TempData["Success"] = "Registration successful!";
 
-                // Redirect based on role
+               
                 if (roleClaim == "Admin")
                     return RedirectToAction("Dashboard", "Admin");
 
@@ -88,7 +88,7 @@ namespace E_Commerce.Controllers
                 Response.Cookies.Append("AuthToken", token, new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = false, // true in production HTTPS
+                    Secure = false, 
                     SameSite = SameSiteMode.Strict,
                     Expires = DateTimeOffset.UtcNow.AddHours(1)
                 });

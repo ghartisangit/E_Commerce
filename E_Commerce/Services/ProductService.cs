@@ -37,7 +37,7 @@ namespace E_Commerce.Services
                 Price = productDto.Price,
                 StockQuantity = productDto.StockQuantity,
                 ImageUrl = productDto.ImageUrl,
-                Category = productDto.Category,
+                //Category = productDto.Category,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -57,7 +57,7 @@ namespace E_Commerce.Services
             product.Price = productDto.Price;
             product.StockQuantity = productDto.StockQuantity;
             product.ImageUrl = productDto.ImageUrl;
-            product.Category = productDto.Category;
+            //product.Category = productDto.Category;
             product.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();

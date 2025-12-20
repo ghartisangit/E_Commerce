@@ -714,7 +714,7 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="/" class="nav-brand">🛒 ShopEase</a>
+            <a href="/" class="nav-brand">🛒 MusicHub</a>
 
             <div class="nav-search">
                 <form action="/" method="get">
@@ -726,6 +726,7 @@
             <ul class="nav-links">
                 @if (User.Identity.IsAuthenticated)
                 {
+                    
                     @if (User.IsInRole("Admin"))
                     {
                         <li><a href="/Admin/Dashboard">📊 Dashboard</a></li>
@@ -733,9 +734,9 @@
                     <li><a href="/Cart/MyOrders">📦 Orders</a></li>
                     <li>
                         <a href="/Cart" class="cart-icon">
-                            🛒
-                            @* <span class="cart-badge" id="cartCount">0</span> *@
-                        </a>
+                            🛒 
+                           
+                      </a>
                     </li>
                     <li>
                         <form action="/Auth/Logout" method="post" style="display: inline;">
@@ -749,15 +750,14 @@
                     <li><a href="/Auth/Register">Register</a></li>
                     <li>
                         <a href="/Cart" class="cart-icon">
-                            🛒
-                            @* <span class="cart-badge">0</span> *@
-                        </a>
+                            🛒 
+                     </a>
                     </li>
                 }
             </ul>
-        </div>
+        </div> 
     </nav>
-
+   
     <main>
         @if (TempData["Success"] != null)
         {
@@ -804,14 +804,14 @@
                 <div class="footer-section">
                     <h3>Contact</h3>
                     <ul>
-                        <li>📧 support@shopease.com</li>
+                        <li>📧 support@MusicHub.com</li>
                         <li>📞 +1 (555) 123-4567</li>
                         <li>📍 123 Commerce St, City</li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 ShopEase - Your Trusted E-commerce Platform. All rights reserved.</p>
+                <p>&copy; 2024 MusicHub- Your Trusted E-commerce Platform. All rights reserved.</p>
             </div>
         </div>
     </footer>

@@ -27,7 +27,7 @@ namespace E_Commerce.Models
         public string? PaymentTransactionId { get; set; }
         public string? KhaltiPidx { get; set; } // Add this for Khalti
         public DateTime CreatedAt { get; set; }
-
+        public string? AdminNotes { get; set; }
         // Navigation properties
         public User User { get; set; }
         public List<OrderItem> OrderItems { get; set; }

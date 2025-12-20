@@ -1,7 +1,9 @@
 ﻿@model IEnumerable<E_Commerce.Models.Product>
-
+@using E_Commerce.DTOs
 @{
     ViewData["Title"] = "Admin Dashboard";
+    var statistics = ViewBag.Statistics as OrderStatisticsDto;
+    var recentOrders = ViewBag.RecentOrders as List<E_Commerce.Models.Order>;
 }
 
 <style>
@@ -11,13 +13,16 @@
         padding: 2rem;
         border-radius: 15px;
         margin-bottom: 2rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
     }
 
         .admin-header h1 {
             font-size: 2rem;
+            margin: 0;
+        }
+
+        .admin-header p {
+            opacity: 0.9;
+            margin: 0.5rem 0 0 0;
         }
 
     .stats-grid {
@@ -55,36 +60,66 @@
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         }
 
+        .stat-icon.pending {
+            background: linear-gradient(135deg, #fbc531 0%, #f39c12 100%);
+        }
+
         .stat-icon.revenue {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
         }
 
     .stat-info h3 {
-        color: var(--gray);
+        color: #6c757d;
         font-size: 0.9rem;
-        font-weight: 500;
-        margin-bottom: 0.5rem;
+        margin: 0;
     }
 
     .stat-value {
         font-size: 2rem;
         font-weight: 700;
-        color: var(--dark);
+        color: #212529;
     }
 
-    .products-table {
+    .section-card {
         background: white;
         border-radius: 15px;
         padding: 2rem;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-
-    .table-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
         margin-bottom: 2rem;
     }
+
+    .nav-tabs {
+        border-bottom: 2px solid #dee2e6;
+        margin-bottom: 2rem;
+        display: flex;
+        gap: 1rem;
+    }
+
+        .nav-tabs a {
+            padding: 1rem 2rem;
+            color: #6c757d;
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+            .nav-tabs a.active {
+                color: #667eea;
+                border-bottom-color: #667eea;
+            }
+
+            .nav-tabs a:hover {
+                color: #667eea;
+            }
+
+    .tab-content {
+        display: none;
+    }
+
+        .tab-content.active {
+            display: block;
+        }
 
     table {
         width: 100%;
@@ -92,36 +127,41 @@
     }
 
     thead {
-        background: var(--light);
+        background: #f8f9fa;
     }
 
     th {
         padding: 1rem;
         text-align: left;
         font-weight: 600;
-        color: var(--dark);
-        border-bottom: 2px solid #ddd;
+        border-bottom: 2px solid #dee2e6;
     }
 
     td {
         padding: 1rem;
-        border-bottom: 1px solid var(--light);
+        border-bottom: 1px solid #f8f9fa;
     }
 
     tbody tr:hover {
-        background: var(--light);
+        background: #f8f9fa;
     }
 
     .product-thumb {
         width: 60px;
         height: 60px;
         border-radius: 8px;
+        overflow: hidden;
         background: #f0f0f0;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 2rem;
     }
+
+        .product-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
     .action-buttons {
         display: flex;
@@ -132,25 +172,28 @@
         padding: 0.5rem 1rem;
         font-size: 0.9rem;
         border-radius: 6px;
+        border: none;
+        cursor: pointer;
     }
 
     .btn-edit {
-        background: var(--secondary);
+        background: #6c757d;
         color: white;
-        border: none;
-        cursor: pointer;
         text-decoration: none;
-        display: inline-block;
     }
 
     .btn-delete {
-        background: var(--danger);
+        background: #dc3545;
         color: white;
-        border: none;
-        cursor: pointer;
     }
 
-    .stock-badge {
+    .btn-view {
+        background: #667eea;
+        color: white;
+        text-decoration: none;
+    }
+
+    .badge {
         padding: 0.25rem 0.75rem;
         border-radius: 12px;
         font-size: 0.85rem;
@@ -171,17 +214,59 @@
         background: #f8d7da;
         color: #721c24;
     }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-processing {
+        background: #cfe2ff;
+        color: #084298;
+    }
+
+    .status-shipped {
+        background: #d1e7dd;
+        color: #0a3622;
+    }
+
+    .status-delivered {
+        background: #d1e7dd;
+        color: #0a3622;
+    }
+
+    .status-completed {
+        background: #d1e7dd;
+        color: #0a3622;
+    }
+
+    .status-cancelled {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #6c757d;
+    }
+
+        .empty-state .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
 </style>
 
 <div class="container">
+    <!-- Header -->
     <div class="admin-header">
         <div>
-            <h1>Admin Dashboard</h1>
-            <p style="opacity: 0.9; margin-top: 0.5rem;">Manage your e-commerce store</p>
+            @* <h1>Admin Dashboard</h1> *@
+            <p>Manage your e-commerce store</p>
         </div>
-        <a href="/Admin/CreateProduct" class="btn btn-primary">➕ Add New Product</a>
     </div>
 
+    <!-- Statistics -->
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-icon products">📦</div>
@@ -195,7 +280,15 @@
             <div class="stat-icon orders">🛒</div>
             <div class="stat-info">
                 <h3>Total Orders</h3>
-                <div class="stat-value">0</div>
+                <div class="stat-value">@(statistics?.TotalOrders ?? 0)</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon pending">⏳</div>
+            <div class="stat-info">
+                <h3>Pending Orders</h3>
+                <div class="stat-value">@(statistics?.PendingOrders ?? 0)</div>
             </div>
         </div>
 
@@ -203,80 +296,160 @@
             <div class="stat-icon revenue">💰</div>
             <div class="stat-info">
                 <h3>Total Revenue</h3>
-                <div class="stat-value">$0.00</div>
+                <div class="stat-value">$@((statistics?.TotalRevenue ?? 0).ToString("N2"))</div>
             </div>
         </div>
     </div>
 
-    <div class="products-table">
-        <div class="table-header">
-            <h2>Products Management</h2>
-        </div>
+    <!-- Tabs -->
+    <div class="nav-tabs">
+        <a href="#" class="active" onclick="switchTab(event, 'products')">📦 Products Management</a>
+        <a href="#" onclick="switchTab(event, 'orders')">🛒 Recent Orders</a>
+    </div>
 
-        @if (Model.Any())
-        {
-            <table>
-                <thead>
-                    <tr>
-                        <th>Image</th>
-                        <th>Product</th>
-                        <th>Category</th>
-                        <th>Price</th>
-                        <th>Stock</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var product in Model)
-                    {
-                        <tr>
-                            <td>
-                                <div class="product-thumb">
-                                    @if (!string.IsNullOrEmpty(product.ImageUrl))
-                                    {
-                                        <img src="@product.ImageUrl" alt="@product.Name" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;" />
-                                    }
-                                    else
-                                    {
-                                        <span>📦</span>
-                                    }
-                                </div>
-                            </td>
-                            <td>
-                                <strong>@product.Name</strong>
-                                <div style="color: var(--gray); font-size: 0.9rem; margin-top: 0.25rem;">
-                                    @(product.Description.Length > 50 ? product.Description.Substring(0, 50) + "..." : product.Description)
-                                </div>
-                            </td>
-                            <td>@product.Category</td>
-                            <td><strong>$@product.Price.ToString("F2")</strong></td>
-                            <td>
-                                <span class="stock-badge @(product.StockQuantity > 10 ? "stock-high" : product.StockQuantity > 0 ? "stock-low" : "stock-out")">
-                                    @(product.StockQuantity > 0 ? product.StockQuantity.ToString() : "Out")
-                                </span>
-                            </td>
-                            <td>
-                                <div class="action-buttons">
-                                    <a href="/Admin/EditProduct/@product.Id" class="btn-sm btn-edit">✏️ Edit</a>
-                                    <form method="post" action="/Admin/DeleteProduct/@product.Id" style="display: inline;"
-                                          onsubmit="return confirm('Are you sure you want to delete this product?');">
-                                        <button type="submit" class="btn-sm btn-delete">🗑️ Delete</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-        else
-        {
-            <div style="text-align: center; padding: 3rem; color: var(--gray);">
-                <div style="font-size: 4rem; margin-bottom: 1rem;">📦</div>
-                <h3>No products yet</h3>
-                <p style="margin: 1rem 0 2rem;">Start by adding your first product</p>
-                <a href="/Admin/CreateProduct" class="btn btn-primary">Add Product</a>
+    <!-- Products Tab -->
+    <div id="products-tab" class="tab-content active">
+        <div class="section-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 style="margin: 0;">Products</h2>
+                <a href="@Url.Action("CreateProduct", "Admin")" class="btn btn-primary">➕ Add New Product</a>
             </div>
-        }
+
+            @if (Model != null && Model.Any())
+            {
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="product-thumb">
+                                        @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                        {
+                                            <img src="@product.ImageUrl" alt="@product.Name" />
+                                        }
+                                        else
+                                        {
+                                            <span>📦</span>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong>@product.Name</strong>
+                                    <div style="color: #6c757d; font-size: 0.9rem; margin-top: 0.25rem;">
+                                        @(product.Description?.Length > 50 ? product.Description.Substring(0, 50) + "..." : product.Description)
+                                    </div>
+                                </td>
+                                <td><strong>$@product.Price.ToString("F2")</strong></td>
+                                <td>
+                                    <span class="badge @(product.StockQuantity > 10 ? "stock-high" : product.StockQuantity > 0 ? "stock-low" : "stock-out")">
+                                        @(product.StockQuantity > 0 ? product.StockQuantity.ToString() : "Out")
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="@Url.Action("EditProduct", "Admin", new { id = product.Id })" class="btn-sm btn-edit">✏️ Edit</a>
+                                        <form method="post" action="@Url.Action("DeleteProduct", "Admin", new { id = product.Id })" style="display: inline;"
+                                              onsubmit="return confirm('Are you sure you want to delete this product?');">
+                                            <button type="submit" class="btn-sm btn-delete">🗑️ Delete</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <div class="icon">📦</div>
+                    <h3>No products yet</h3>
+                    <p>Start by adding your first product</p>
+                    <a href="@Url.Action("CreateProduct", "Admin")" class="btn btn-primary">Add Product</a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Orders Tab -->
+    <div id="orders-tab" class="tab-content">
+        <div class="section-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 style="margin: 0;">Recent Orders</h2>
+                <a href="@Url.Action("Orders", "Admin")" class="btn btn-primary">View All Orders →</a>
+            </div>
+
+            @if (recentOrders != null && recentOrders.Any())
+            {
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in recentOrders)
+                        {
+                            <tr>
+                                <td><strong>#@order.Id</strong></td>
+                                <td>
+                                    <strong>@order.ShippingName</strong>
+                                    <div style="color: #6c757d; font-size: 0.85rem;">@order.ShippingEmail</div>
+                                </td>
+                                <td>@order.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                <td><strong>$@order.TotalAmount.ToString("N2")</strong></td>
+                                <td>
+                                    <span class="badge status-@order.Status.ToLower()">
+                                        @order.Status
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("OrderDetails", "Admin", new { id = order.Id })" class="btn-sm btn-view">
+                                        👁️ View
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <div class="icon">🛒</div>
+                    <h3>No orders yet</h3>
+                    <p>Orders will appear here once customers start purchasing</p>
+                </div>
+            }
+        </div>
     </div>
 </div>
+
+<script>
+    function switchTab(event, tabName) {
+        event.preventDefault();
+
+        // Remove active from all tabs and links
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.nav-tabs a').forEach(l => l.classList.remove('active'));
+
+        // Activate selected tab
+        document.getElementById(tabName + '-tab').classList.add('active');
+        event.target.classList.add('active');
+    }
+</script>

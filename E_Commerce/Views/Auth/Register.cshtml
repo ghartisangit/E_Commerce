@@ -4,65 +4,6 @@
     ViewData["Title"] = "Register";
 }
 
-@* <h2>Register</h2>
-
-@if (TempData["Success"] != null)
-{
-    <div style="color: green;">
-        @TempData["Success"]
-    </div>
-}
-
-<form asp-action="Register" method="post">
-
-    <div>
-        <label>First Name</label><br />
-        <input asp-for="FirstName" />
-        <span asp-validation-for="FirstName" style="color:red"></span>
-    </div>
-
-    <div>
-        <label>Last Name</label><br />
-        <input asp-for="LastName" />
-        <span asp-validation-for="LastName" style="color:red"></span>
-    </div>
-
-    <div>
-        <label>Email</label><br />
-        <input asp-for="Email" type="email" />
-        <span asp-validation-for="Email" style="color:red"></span>
-    </div>
-
-    <div>
-        <label>Password</label><br />
-        <input asp-for="Password" type="password" />
-        <span asp-validation-for="Password" style="color:red"></span>
-    </div>
-
-    <div>
-        <label>Confirm Password</label><br />
-        <input asp-for="ConfirmPassword" type="password" />
-        <span asp-validation-for="ConfirmPassword" style="color:red"></span>
-    </div>
-
-    <br />
-
-    <button type="submit">Register</button>
-</form>
-
-@if (!ViewData.ModelState.IsValid)
-{
-    <div style="color:red;">
-        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-        {
-            <p>@error.ErrorMessage</p>
-        }
-    </div>
-}
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-} *@
 
 <div class="container">
     <div class="auth-container" style="max-width: 600px;">

@@ -7,6 +7,7 @@ using System.Security.Claims;
 
 namespace E_Commerce.Controllers
 {
+    [Authorize(Roles = "User")]
     public class CartController : Controller
     {
         private readonly ICartService _cartService;
@@ -81,14 +82,14 @@ namespace E_Commerce.Controllers
 
             try
             {
-                // Create a pending order first
+               
                 var order = await _orderService.CreatePendingOrderAsync(userId, checkoutDto, cart);
 
-                // Convert amount to paisa (NPR smallest unit)
+                
                 var totalAmount = _cartService.GetCartTotal();
                 var amountInPaisa = (int)(totalAmount * 100);
 
-                // Prepare Khalti payment request
+               
                 var khaltiRequest = new KhaltiPaymentRequest
                 {
                     ReturnUrl = Url.Action("KhaltiCallback", "Cart", null, Request.Scheme),
@@ -104,13 +105,13 @@ namespace E_Commerce.Controllers
                     }
                 };
 
-                // Initiate payment with Khalti
+               
                 var khaltiResponse = await _khaltiService.InitiatePaymentAsync(khaltiRequest);
 
-                // Update order with Khalti pidx
+               
                 await _orderService.UpdateOrderKhaltiPidxAsync(order.Id, khaltiResponse.Pidx);
 
-                // Redirect to Khalti payment page
+               
                 return Redirect(khaltiResponse.PaymentUrl);
             }
             catch (Exception ex)
@@ -126,20 +127,20 @@ namespace E_Commerce.Controllers
 
         [Authorize]
         public async Task<IActionResult> KhaltiCallback(
-    string pidx,
-    string? txnId = null,
-    string? transaction_id = null,
-    string? tidx = null,
-    int? amount = null,
-    int? total_amount = null,
-    string? mobile = null,
-    string? purchase_order_id = null,
-    string? purchase_order_name = null,
-    string? status = null)
+                 string pidx,
+                string? txnId = null,
+                string? transaction_id = null,
+                string? tidx = null,
+                int? amount = null,
+                int? total_amount = null,
+                string? mobile = null,
+                string? purchase_order_id = null,
+                string? purchase_order_name = null,
+                string? status = null)
         {
             try
             {
-                // Log all parameters for debugging
+                
                 Console.WriteLine($"Khalti Callback - pidx: {pidx}, status: {status}, purchase_order_id: {purchase_order_id}");
 
                 if (string.IsNullOrEmpty(pidx))
@@ -154,31 +155,30 @@ namespace E_Commerce.Controllers
                     return RedirectToAction("Index");
                 }
 
-                // Parse order ID
+              
                 if (!int.TryParse(purchase_order_id, out int orderId))
                 {
                     TempData["Error"] = "Invalid order ID";
                     return RedirectToAction("Index");
                 }
 
-                // Get the actual amount (Khalti sends in paisa)
+                
                 var actualAmount = total_amount ?? amount ?? 0;
 
-                // Verify payment with Khalti
+              
                 var verificationResponse = await _khaltiService.VerifyPaymentAsync(pidx, actualAmount);
 
                 Console.WriteLine($"Verification Status: {verificationResponse.Status}");
 
-                // Check if payment is completed
+               
                 if (verificationResponse.Status.Equals("Completed", StringComparison.OrdinalIgnoreCase))
                 {
-                    // Update order status to completed
+                  
                     await _orderService.CompleteOrderAsync(
                         orderId,
                         verificationResponse.TransactionId,
                         verificationResponse.Pidx);
 
-                    // Clear cart
                     _cartService.ClearCart();
 
                     TempData["Success"] = "Payment successful! Your order has been placed.";
