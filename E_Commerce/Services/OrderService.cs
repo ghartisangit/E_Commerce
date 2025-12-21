@@ -15,9 +15,6 @@ namespace E_Commerce.Services
             _context = context;
         }
 
-      
-
-
         public async Task<Order> CreatePendingOrderAsync(int userId, CheckOutDto checkoutDto, List<CartItem> cart)
         {
             var order = new Order
@@ -94,7 +91,7 @@ namespace E_Commerce.Services
          .OrderByDescending(o => o.CreatedAt)
          .ToListAsync();
 
-            // Handle null values for each order
+            
             foreach (var order in orders)
             {
                 order.PaymentMethod ??= "Not Set";
@@ -165,7 +162,7 @@ namespace E_Commerce.Services
 
             order.Status = dto.Status;
             order.AdminNotes = dto.AdminNotes;
-            //order.UpdatedAt = DateTime.UtcNow;
+            
 
             await _context.SaveChangesAsync();
             return true;
@@ -214,7 +211,7 @@ namespace E_Commerce.Services
 
             order.Status = "Cancelled";
             order.AdminNotes = $"Cancelled: {reason}";
-            //order.UpdatedAt = DateTime.UtcNow;
+            
 
             await _context.SaveChangesAsync();
             return true;

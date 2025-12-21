@@ -37,7 +37,6 @@ namespace E_Commerce.Services
                 Price = productDto.Price,
                 StockQuantity = productDto.StockQuantity,
                 ImageUrl = productDto.ImageUrl,
-                //Category = productDto.Category,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -57,7 +56,6 @@ namespace E_Commerce.Services
             product.Price = productDto.Price;
             product.StockQuantity = productDto.StockQuantity;
             product.ImageUrl = productDto.ImageUrl;
-            //product.Category = productDto.Category;
             product.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
@@ -78,8 +76,9 @@ namespace E_Commerce.Services
         public async Task<IEnumerable<Product>> SearchProductsAsync(string searchTerm)
         {
             return await _context.Products
-                .Where(p => p.Name.Contains(searchTerm) || p.Description.Contains(searchTerm))
+                .Where(p => p.Name.StartsWith(searchTerm))
                 .ToListAsync();
+
         }
     }
 }

@@ -22,7 +22,7 @@ namespace E_Commerce.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // User Configuration
+           
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -31,14 +31,14 @@ namespace E_Commerce.Data
                 entity.Property(e => e.Role).HasDefaultValue("User");
             });
 
-            // Product Configuration
+            
             modelBuilder.Entity<Product>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Price).HasColumnType("decimal(18,2)");
             });
 
-            // Review Configuration
+            
             modelBuilder.Entity<Review>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -53,7 +53,7 @@ namespace E_Commerce.Data
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // Order Configuration
+          
             modelBuilder.Entity<Order>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -64,7 +64,6 @@ namespace E_Commerce.Data
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // OrderItem Configuration
             modelBuilder.Entity<OrderItem>(entity =>
             {
                 entity.HasKey(e => e.Id);

@@ -1,5 +1,7 @@
-﻿using E_Commerce.Interfaces;
+﻿using E_Commerce.Data;
+using E_Commerce.Interfaces;
 using E_Commerce.Models;
+using System.Security.Claims;
 using System.Text.Json;
 
 namespace E_Commerce.Services
@@ -7,17 +9,30 @@ namespace E_Commerce.Services
     public class CartService : ICartService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private const string CartSessionKey = "ShoppingCart";
 
         public CartService(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }
 
+        
+        private string GetCartSessionKey()
+        {
+            var userId = GetCurrentUserId();
+            return userId > 0 ? $"ShoppingCart_{userId}" : "ShoppingCart_Guest";
+        }
+
+    
+        private int GetCurrentUserId()
+        {
+            var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return int.TryParse(userIdClaim, out int userId) ? userId : 0;
+        }
+
         public List<CartItem> GetCart()
         {
             var session = _httpContextAccessor.HttpContext.Session;
-            var cartJson = session.GetString(CartSessionKey);
+            var cartJson = session.GetString(GetCartSessionKey());
             return string.IsNullOrEmpty(cartJson)
                 ? new List<CartItem>()
                 : JsonSerializer.Deserialize<List<CartItem>>(cartJson);
@@ -77,7 +92,7 @@ namespace E_Commerce.Services
 
         public void ClearCart()
         {
-            _httpContextAccessor.HttpContext.Session.Remove(CartSessionKey);
+            _httpContextAccessor.HttpContext.Session.Remove(GetCartSessionKey());
         }
 
         public decimal GetCartTotal()
@@ -90,7 +105,7 @@ namespace E_Commerce.Services
         {
             var session = _httpContextAccessor.HttpContext.Session;
             var cartJson = JsonSerializer.Serialize(cart);
-            session.SetString(CartSessionKey, cartJson);
+            session.SetString(GetCartSessionKey(), cartJson);
         }
     }
 }

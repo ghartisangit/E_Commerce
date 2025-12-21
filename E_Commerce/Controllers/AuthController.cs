@@ -1,11 +1,13 @@
 ﻿using E_Commerce.DTOs;
 using E_Commerce.Interfaces;
+using E_Commerce.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace E_Commerce.Controllers
 {
+  
     public class AuthController : Controller
     {
         private readonly IAuthService _authService;
@@ -34,23 +36,23 @@ namespace E_Commerce.Controllers
             {
                 var token = await _authService.RegisterAsync(registerDto);
 
-                
+
                 Response.Cookies.Append("AuthToken", token, new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = false, 
+                    Secure = false,
                     SameSite = SameSiteMode.Strict,
                     Expires = DateTimeOffset.UtcNow.AddHours(1)
                 });
 
-                
+
                 var handler = new JwtSecurityTokenHandler();
                 var jwtToken = handler.ReadJwtToken(token);
                 var roleClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
 
                 TempData["Success"] = "Registration successful!";
 
-               
+
                 if (roleClaim == "Admin")
                     return RedirectToAction("Dashboard", "Admin");
 
@@ -63,7 +65,7 @@ namespace E_Commerce.Controllers
             }
         }
 
-       
+
         [HttpGet]
         public IActionResult Login(string returnUrl = null)
         {
@@ -84,23 +86,23 @@ namespace E_Commerce.Controllers
             {
                 var token = await _authService.LoginAsync(loginDto);
 
-                // Store JWT in cookie
+
                 Response.Cookies.Append("AuthToken", token, new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = false, 
+                    Secure = false,
                     SameSite = SameSiteMode.Strict,
                     Expires = DateTimeOffset.UtcNow.AddHours(1)
                 });
 
-                // Parse JWT to get role
+
                 var handler = new JwtSecurityTokenHandler();
                 var jwtToken = handler.ReadJwtToken(token);
                 var roleClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
 
                 TempData["Success"] = "Login successful!";
 
-                // Redirect based on role
+
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                     return Redirect(returnUrl);
 
@@ -117,7 +119,7 @@ namespace E_Commerce.Controllers
         }
 
 
-       
+
 
         [HttpPost]
         public IActionResult Logout()
@@ -128,3 +130,7 @@ namespace E_Commerce.Controllers
         }
     }
 }
+
+
+
+

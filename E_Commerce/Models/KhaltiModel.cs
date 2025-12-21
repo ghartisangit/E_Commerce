@@ -4,7 +4,7 @@
     {
         public string ReturnUrl { get; set; }
         public string WebsiteUrl { get; set; }
-        public decimal Amount { get; set; } // Amount in paisa (NPR * 100)
+        public decimal Amount { get; set; }
         public string PurchaseOrderId { get; set; }
         public string PurchaseOrderName { get; set; }
         public CustomerInfo CustomerInfo { get; set; }

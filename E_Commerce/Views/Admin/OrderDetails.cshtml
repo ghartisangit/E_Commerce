@@ -199,9 +199,9 @@
     </div>
 
     <div class="order-grid">
-        <!-- Left Column -->
+        
         <div>
-            <!-- Order Information -->
+          
             <div class="info-card">
                 <h5>Order Information</h5>
                 <div class="info-row">
@@ -234,7 +234,7 @@
                
             </div>
 
-            <!-- Customer Information -->
+           
             <div class="info-card">
                 <h5>Customer Information</h5>
                 <div class="info-row">
@@ -247,7 +247,7 @@
                 </div>
             </div>
 
-            <!-- Shipping Information -->
+           
             <div class="info-card">
                 <h5>Shipping Information</h5>
                 <p style="margin: 0;"><strong>@Model.ShippingName</strong></p>
@@ -257,7 +257,7 @@
                 <p style="margin: 0.5rem 0;">📧 @Model.ShippingEmail</p>
             </div>
 
-            <!-- Order Items -->
+            
             <div class="info-card">
                 <h5>Order Items</h5>
                 <table>
@@ -301,7 +301,7 @@
                 </table>
             </div>
 
-            <!-- Admin Notes -->
+        
             @if (!string.IsNullOrEmpty(Model.AdminNotes))
             {
                 <div class="info-card" style="background: #fff3cd; border-left: 4px solid #ffc107;">
@@ -311,9 +311,8 @@
             }
         </div>
 
-        <!-- Right Column (Sidebar) -->
         <div>
-            <!-- Status Management -->
+          
             <div class="info-card">
                 <h5>Order Status</h5>
 
@@ -333,7 +332,6 @@
                             <option value="">Select Status...</option>
                             <option value="Pending">Pending</option>
                             <option value="Processing">Processing</option>
-                            <option value="Shipped">Shipped</option>
                             <option value="Delivered">Delivered</option>
                             <option value="Completed">Completed</option>
                         </select>
@@ -351,7 +349,7 @@
                 </form>
             </div>
 
-            <!-- Cancel Order -->
+           
             @if (Model.Status != "Cancelled" && Model.Status != "Completed")
             {
                 <div class="info-card" style="border: 2px solid #dc3545;">
@@ -374,7 +372,6 @@
                 </div>
             }
 
-            <!-- Quick Actions -->
             <div class="info-card">
                 <h5>Quick Actions</h5>
                 <div class="quick-actions">

@@ -9,10 +9,10 @@ namespace E_Commerce.Models
         public string LastName { get; set; }
         public string Email { get; set; }
         public string PasswordHash { get; set; }
-        public string Role { get; set; } // "Admin" or "User"
+        public string Role { get; set; } 
         public DateTime CreatedAt { get; set; }
 
-        // Navigation Properties
+        
         public ICollection<Order> Orders { get; set; }
         public ICollection<Review> Reviews { get; set; }
     }

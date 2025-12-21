@@ -1,0 +1,144 @@
+﻿@model E_Commerce.Models.Order
+@{
+    ViewData["Title"] = "Payment Successful";
+    Layout = "_Layout";
+}
+
+<style>
+    .success-container {
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 40px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    .success-icon {
+        font-size: 80px;
+        color: #28a745;
+        margin-bottom: 20px;
+    }
+
+    .order-details {
+        background: #f8f9fa;
+        padding: 30px;
+        border-radius: 8px;
+        margin: 30px 0;
+        text-align: left;
+    }
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+
+    .order-items {
+        margin-top: 20px;
+    }
+
+    .item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        background: white;
+        margin-bottom: 10px;
+        border-radius: 6px;
+    }
+</style>
+
+<div class="success-container">
+    <div class="success-icon">✓</div>
+    <h1 style="color: #28a745; margin-bottom: 10px;">Payment Successful!</h1>
+    <p style="font-size: 18px; color: #6c757d; margin-bottom: 30px;">
+        Thank you for your purchase. Your order has been confirmed.
+    </p>
+
+    <div class="order-details">
+        <h3 style="margin-bottom: 20px;">Order Details</h3>
+
+        <div class="detail-row">
+            <strong>Order Number:</strong>
+            <span>#@Model.Id</span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Order Date:</strong>
+            <span>@Model.CreatedAt.ToString("MMM dd, yyyy HH:mm")</span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Status:</strong>
+            <span class="badge bg-info">@Model.Status</span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Payment Method:</strong>
+            <span>@Model.PaymentMethod</span>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.PaymentTransactionId))
+        {
+            <div class="detail-row">
+                <strong>Transaction ID:</strong>
+                <span><small>@Model.PaymentTransactionId</small></span>
+            </div>
+        }
+
+        <div class="detail-row">
+            <strong>Total Amount:</strong>
+            <span style="font-size: 24px; color: #28a745; font-weight: bold;">
+                $@Model.TotalAmount.ToString("N2")
+            </span>
+        </div>
+    </div>
+
+    <div style="text-align: left; margin: 30px 0;">
+        <h4>Shipping Address</h4>
+        <p style="margin: 10px 0;">
+            <strong>@Model.ShippingName</strong><br />
+            @Model.ShippingAddress<br />
+            @Model.ShippingCity<br />
+            📞 @Model.ShippingPhone<br />
+            📧 @Model.ShippingEmail
+        </p>
+    </div>
+
+    <div class="order-items">
+        <h4 style="text-align: left; margin-bottom: 15px;">Items Ordered</h4>
+        @foreach (var item in Model.OrderItems)
+        {
+            <div class="item">
+                <span>@item.Product.Name × @item.Quantity</span>
+                <strong>$@((item.Price * item.Quantity).ToString("N2"))</strong>
+            </div>
+        }
+    </div>
+
+    <div style="margin-top: 40px;">
+        @if (User.Identity.IsAuthenticated)
+        {
+            <a href="@Url.Action("MyOrders", "Cart")" class="btn btn-primary btn-lg" style="margin-right: 10px;">
+                View My Orders
+            </a>
+        }
+        <a href="@Url.Action("Index", "Home")" class="btn btn-secondary btn-lg">
+            Continue Shopping
+        </a>
+    </div>
+
+    <div style="margin-top: 30px; padding-top: 30px; border-top: 2px solid #dee2e6;">
+        <p style="color: #6c757d;">
+            <strong>What's Next?</strong><br />
+            We'll send you an email confirmation shortly.<br />
+            Your order will be processed and shipped within 2-3 business days.
+        </p>
+    </div>
+</div>

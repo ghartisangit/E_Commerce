@@ -20,8 +20,6 @@ namespace E_Commerce.Validators
             RuleFor(x => x.StockQuantity)
                 .GreaterThanOrEqualTo(0).WithMessage("Stock quantity cannot be negative");
 
-            //RuleFor(x => x.Category)
-            //    .NotEmpty().WithMessage("Category is required");
         }
     }
 }
